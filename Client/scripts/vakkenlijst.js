@@ -6,6 +6,21 @@ export class Vakkenlijst {
     #vakken;
     constructor() {
         this.#vakken = [];
+    }
+
+    save() {
+        // Bewaren van de array van vakken.
+        // Bemerk dat Vak objecten een toJSON() methode hebben: die zal door JSON.stringify worden aangeroepen
+        // om 'meer controle' te hebben over de serialisatie naar de JSON string.
+        localStorage.setItem(
+            localStorageKey,
+            JSON.stringify(this.#vakken)
+        );
+    }
+
+    load() {
+        // Een eventuele reeds geladen lijst weer leegmaken.
+        this.#vakken = [];
 
         // Ophalen van de lijst van vakken uit de local storage.
         // Opgelet: dit kan null zijn indien de pagina een eerste keer getoond wordt.
@@ -16,60 +31,27 @@ export class Vakkenlijst {
             // Vandaar loopen we over alle vakken uit de JSON en maken we terug volwaardige Vak-objecten van.
             let vakkenFromJson = JSON.parse(vakkenLijstFromStorage);
             vakkenFromJson.forEach(vakFromJson => {
-                let vak = Vak.restoreFromJsonObject(this, vakFromJson);
+                let vak = Vak.restoreFromJsonObject(vakFromJson);
                 this.#vakken.push(vak);
             });
         }
         else {
             // Indien wel null: al direct vakken toevoegen :)
-            this.#vakken.push(new Vak(this, -1, "IT essentials", 3, 0));
-            this.#vakken.push(new Vak(this, -1, "IT landscape", 3, 0));
-            this.#vakken.push(new Vak(this, -1, "Databases basis", 4, 0));
-            this.#vakken.push(new Vak(this, -1, "Databases gevorderd", 4, 0));
-            this.#vakken.push(new Vak(this, -1, "Programmeren basis", 9, 0));
-            this.#vakken.push(new Vak(this, -1, "Programmeren gevorderd", 6, 0));
-            this.#vakken.push(new Vak(this, -1, "Frontend basis", 7, 0));
-            this.#vakken.push(new Vak(this, -1, "Frontend gevorderd", 5, 0));
-            this.#vakken.push(new Vak(this, -1, "Backend 1", 4, 0));
-            this.#vakken.push(new Vak(this, -1, "Verkenning van de werkplek", 4, 0));
-            this.#vakken.push(new Vak(this, -1, "Communicatievaardigheden", 3, 0));
-            this.#vakken.push(new Vak(this, -1, "Participatie op de werkplek 1", 6, 0));
-            this.#vakken.push(new Vak(this, -1, "Teamvaardigheden", 3, 0));
-            this.save();
+            this.#vakken.push(new Vak(0, "IT essentials", 3, 0));
+            this.#vakken.push(new Vak(1, "IT landscape", 3, 0));
+            this.#vakken.push(new Vak(2, "Databases basis", 4, 0));
+            this.#vakken.push(new Vak(3, "Databases gevorderd", 4, 0));
+            this.#vakken.push(new Vak(4, "Programmeren basis", 9, 0));
+            this.#vakken.push(new Vak(5, "Programmeren gevorderd", 6, 0));
+            this.#vakken.push(new Vak(6, "Frontend basis", 7, 0));
+            this.#vakken.push(new Vak(7, "Frontend gevorderd", 5, 0));
+            this.#vakken.push(new Vak(8, "Backend 1", 4, 0));
+            this.#vakken.push(new Vak(9, "Verkenning van de werkplek", 4, 0));
+            this.#vakken.push(new Vak(10, "Communicatievaardigheden", 3, 0));
+            this.#vakken.push(new Vak(11, "Participatie op de werkplek 1", 6, 0));
+            this.#vakken.push(new Vak(12, "Teamvaardigheden", 3, 0));
         }
-    }
-
-    addVak(naam, studiepunten) {
-        let vak = new Vak(this, -1, naam, studiepunten, 0);
-        let bestaandVak = this.#vakken.filter(v => v.naam === naam);
-        if (bestaandVak.length > 0) throw `Er bestaat reeds een vak met de naam ${naam}`;
-        else {
-            this.#vakken.push(vak);
-            this.save();
-            this.#renderVakken();
-        }
-    }
-
-    deleteVak(id) {
-        let indexToDelete = -1;
-        for (let i = 0; i < this.#vakken.length; i++) {
-            if (this.#vakken[i].id === id) {
-                indexToDelete = i;
-                break;
-            }
-        }
-        if (indexToDelete >= 0) {
-            this.#vakken.splice(indexToDelete, 1);
-            this.save();
-            this.#renderVakken();
-        }
-    }
-
-    save() {
-        localStorage.setItem(
-            localStorageKey,
-            JSON.stringify(this.#vakken)
-        );
+        this.#renderVakken();
     }
 
     render(element) {
@@ -81,36 +63,32 @@ export class Vakkenlijst {
                         <th>Studiepunten</th>
                         <th>Geschat aantal uren</th>
                         <th>Aantal uren</th>
-                        <th></th> <!-- Voor de action buttons -->
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td><button id="voegVakToe" class="btn btn-secondary">Nieuw vak</button></td>
                         <td></td>
                         <td></td>
-                        <td><button id="corrigeerUren" class="btn btn-secondary">Correctie</button></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </tfoot>
-            </table>`;
+            </table>
+            <button id="save">Bewaren</button><button id="load">Laden</button>`;
 
         element.innerHTML = table;
 
-        document.getElementById("voegVakToe").addEventListener("click", (evt) => {
-            this.addVak("Vak", 1);
-        });
+        document.getElementById("save").addEventListener("click", (e) => {
+            this.save();
+        })
 
-        document.getElementById("corrigeerUren").addEventListener("click", (evt) => {
-            let buttons = document.querySelectorAll("#vakkenlijst input");
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].removeAttribute("readonly");
-            }
+        document.getElementById("load").addEventListener("click", (e) => {
+            this.load();
         });
-
-        this.#renderVakken();
     }
 
     #renderVakken() {
