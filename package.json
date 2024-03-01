@@ -1,0 +1,17 @@
+{
+    "name": "mgp33-hoofdstuk05-json",
+    "version": "0.0.1",
+    "description": "Demo code en oplossingen van de oefeningen van hoofdstuk 05 JSON.",
+    "main": "index.js",
+    "scripts": {
+      "start": "cd Server & npm run start"
+    },
+    "keywords": [
+      "UCLL",
+      "FEG",
+      "hoofdstuk05",
+      "JSON"
+    ],
+    "author": "David Urting",
+    "license": "UNLICENSED"
+  }

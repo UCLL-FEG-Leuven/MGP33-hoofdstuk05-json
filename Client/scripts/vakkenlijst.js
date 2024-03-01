@@ -4,9 +4,23 @@ const localStorageKey = "vakkenLijst";
 
 export class Vakkenlijst {
     #vakken;
+
     constructor() {
         this.#vakken = [];
+        this.load();
+    }
 
+    save() {
+        // Bewaren van de array van vakken.
+        // Bemerk dat Vak objecten een toJSON() methode hebben: die zal door onderstaande JSON.stringify worden aangeroepen
+        // om 'meer controle' te hebben over de serialisatie naar de JSON string.
+        localStorage.setItem(
+            localStorageKey,
+            JSON.stringify(this.#vakken)
+        );
+    }
+
+    load() {
         // Ophalen van de lijst van vakken uit de local storage.
         // Opgelet: dit kan null zijn indien de pagina een eerste keer getoond wordt.
         let vakkenLijstFromStorage = localStorage.getItem(localStorageKey);
@@ -21,7 +35,7 @@ export class Vakkenlijst {
             });
         }
         else {
-            // Indien wel null: al direct vakken toevoegen :)
+            // Indien wel null: al direct vakken toevoegen.
             this.#vakken.push(new Vak(this, -1, "IT essentials", 3, 0));
             this.#vakken.push(new Vak(this, -1, "IT landscape", 3, 0));
             this.#vakken.push(new Vak(this, -1, "Databases basis", 4, 0));
@@ -63,13 +77,6 @@ export class Vakkenlijst {
             this.save();
             this.#renderVakken();
         }
-    }
-
-    save() {
-        localStorage.setItem(
-            localStorageKey,
-            JSON.stringify(this.#vakken)
-        );
     }
 
     render(element) {
