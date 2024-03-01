@@ -1,16 +1,19 @@
 ﻿import { Vak } from "./vak.js";
 
+// Dit zal de key zijn die we gebruiken in de localStorage.
+// Je kan de localStorage bekijken via Developer Tools - Application - Local storage
 const localStorageKey = "vakkenLijst";
 
 export class Vakkenlijst {
     #vakken;
+
     constructor() {
         this.#vakken = [];
     }
 
     save() {
         // Bewaren van de array van vakken.
-        // Bemerk dat Vak objecten een toJSON() methode hebben: die zal door JSON.stringify worden aangeroepen
+        // Bemerk dat Vak objecten een toJSON() methode hebben: die zal door onderstaande JSON.stringify worden aangeroepen
         // om 'meer controle' te hebben over de serialisatie naar de JSON string.
         localStorage.setItem(
             localStorageKey,
@@ -19,16 +22,16 @@ export class Vakkenlijst {
     }
 
     load() {
-        // Een eventuele reeds geladen lijst weer leegmaken.
+        // Een eventuele reeds geladen lijst weer leegmaken (vb. als de gebruiker een tweede maal op de 'Laden' knop drukt).
         this.#vakken = [];
 
         // Ophalen van de lijst van vakken uit de local storage.
-        // Opgelet: dit kan null zijn indien de pagina een eerste keer getoond wordt.
+        // Opgelet: dit kan null zijn indien de pagina een eerste keer getoond wordt en er nog geen data in de localStorage zit.
         let vakkenLijstFromStorage = localStorage.getItem(localStorageKey);
         if (vakkenLijstFromStorage) {
             // Indien niet null: de JSON string terug omzetten naar een array van vakken.
-            // Opgelet: dit zijn gewone JavaScript objecten die niet (meer) afstammen van de Vak class.
-            // Vandaar loopen we over alle vakken uit de JSON en maken we terug volwaardige Vak-objecten van.
+            // Opgelet: de array bestaat uit gewone JavaScript objecten (object literals) die niet afstammen van de Vak class.
+            // Vandaar loopen we over alle vakken uit de JSON en maken we terug volwaardige Vak-objecten van met de Vak.restoreFromJsonObject() methode.
             let vakkenFromJson = JSON.parse(vakkenLijstFromStorage);
             vakkenFromJson.forEach(vakFromJson => {
                 let vak = Vak.restoreFromJsonObject(vakFromJson);
@@ -36,7 +39,7 @@ export class Vakkenlijst {
             });
         }
         else {
-            // Indien wel null: al direct vakken toevoegen :)
+            // Indien wel null: al direct vakken toevoegen...
             this.#vakken.push(new Vak(0, "IT essentials", 3, 0));
             this.#vakken.push(new Vak(1, "IT landscape", 3, 0));
             this.#vakken.push(new Vak(2, "Databases basis", 4, 0));
@@ -51,10 +54,13 @@ export class Vakkenlijst {
             this.#vakken.push(new Vak(11, "Participatie op de werkplek 1", 6, 0));
             this.#vakken.push(new Vak(12, "Teamvaardigheden", 3, 0));
         }
+
+        // Eens dat de vakken geladen zijn: ook direct tonen.
         this.#renderVakken();
     }
 
     render(element) {
+        // Deze render zal de table renderen maar nog niet de vakken (die worden pas geladen bij het aanroepen van load()).
         let table =
             `<table id="vakkenlijst" class="table">
                 <thead>

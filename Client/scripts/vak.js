@@ -2,7 +2,7 @@
 
 export class Vak {
     static restoreFromJsonObject(jsonObject) {
-        // En het 'vak' object aanmaken op basis van de settings in het vak uit de JSON.
+        // Het 'vak' object aanmaken op basis van de settings in het vak uit de JSON.
         let vak = new Vak(jsonObject.id, jsonObject.naam, jsonObject.studiepunten, jsonObject.aantalUren);
         return vak;
     }
@@ -20,7 +20,6 @@ export class Vak {
     }
 
     // Primaire (technische) sleutel van een vak.
-    // Blijft ongewijzigd, zelfs bij wijzigingen van de naam van het vak.
     get id() {
         return this.#id;
     }
@@ -63,10 +62,11 @@ export class Vak {
             </tr>`;
 
         // innerHTML gebruiken is gevaarlijk: want de tweede keer dat je een rij toevoegt zal de HTML content vervangen worden waardoor
-        // alle event handlers weggegooid worden...
+        // alle event handlers weggegooid worden... Vandaar gebruik van insertAdjacentHTML.
         tbody.insertAdjacentHTML('beforeend', tr);
 
         let aantalUrenInput = document.querySelector(`#vak-${this.id} input[name='aantalUren']`);
+        // selecteren van de '+' button. In principe kunnen er nog buttons bijkomen (vb. een delete button). Vandaar: first-child.
         let verhoogAantalUrenButton = document.querySelector(`#vak-${this.id} > td:last-child > button:first-child`);
         verhoogAantalUrenButton.addEventListener("click", (evt) => {
             this.aantalUren++;
