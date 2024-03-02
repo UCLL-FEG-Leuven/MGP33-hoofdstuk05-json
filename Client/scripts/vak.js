@@ -1,5 +1,3 @@
-﻿let nextId = 0;
-
 export class Vak {
     static restoreFromJsonObject(jsonObject) {
         // Het 'vak' object aanmaken op basis van de settings in het vak uit de JSON.
